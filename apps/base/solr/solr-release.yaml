@@ -1,0 +1,63 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: solr
+  namespace: solr
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: solr
+      version: "0.8.0"  # Check for latest version
+      sourceRef:
+        kind: HelmRepository
+        name: apache-solr
+        namespace: solr
+      interval: 5m
+  values:
+    replicas: 3
+    solr:
+      version: "9.4"
+      javaMem: "-Xms1g -Xmx2g"
+      authentication:
+        enabled: false
+      collections:
+        - name: "test-collection"
+          configName: "_default"
+          shards: 2
+          replicas: 2
+    persistence:
+      enabled: true
+      storageClass: "managed-csi"
+      size: "10Gi"
+    service:
+      type: LoadBalancer
+      port: 8983
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "2Gi"
+        cpu: "1000m"
+    zookeeper:
+      enabled: true
+      replicaCount: 3
+      persistence:
+        enabled: true
+        storageClass: "managed-csi"
+        size: "5Gi"
+      resources:
+        requests:
+          memory: "512Mi"
+          cpu: "250m"
+        limits:
+          memory: "1Gi"
+          cpu: "500m"
+    monitoring:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        namespace: monitoring
+        labels:
+          app: solr
