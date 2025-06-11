@@ -3,8 +3,8 @@ kind: Kustomization
 
 resources:
   - solr-namespace.yaml
-  - solr-helmrepository.yaml
-  - solr-helmrelease.yaml
+  - solr-repository.yaml
+  - solr-release.yaml
 
 # Optional: Add common labels to all resources
 commonLabels:
