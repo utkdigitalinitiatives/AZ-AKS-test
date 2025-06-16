@@ -5,6 +5,7 @@ resources:
   - solr-namespace.yaml
   - solr-repository.yaml
   - solr-release.yaml
+  - rbac.yaml
 
 # Optional: Add common labels to all resources
 commonLabels:

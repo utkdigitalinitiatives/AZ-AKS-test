@@ -1,0 +1,78 @@
+---
+# ServiceAccount for FluxCD in solr namespace
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: flux-applier
+  namespace: solr
+---
+# Role with necessary permissions for Helm operations
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: solr
+  name: flux-helm-operator
+rules:
+# Permissions for Helm to manage releases (secrets are used to store release state)
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing ConfigMaps (sometimes used by Helm)
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing Services
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing Pods
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing PersistentVolumeClaims
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing Deployments
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing StatefulSets (often used by Solr)
+- apiGroups: ["apps"]
+  resources: ["statefulsets"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing ReplicaSets
+- apiGroups: ["apps"]
+  resources: ["replicasets"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing Ingress (if needed)
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing ServiceAccounts
+- apiGroups: [""]
+  resources: ["serviceaccounts"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing RoleBindings
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["rolebindings"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing Roles
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["roles"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+---
+# RoleBinding to grant permissions to the ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: flux-helm-operator
+  namespace: solr
+subjects:
+- kind: ServiceAccount
+  name: flux-applier
+  namespace: solr
+roleRef:
+  kind: Role
+  name: flux-helm-operator
+  apiGroup: rbac.authorization.k8s.io
