@@ -12,7 +12,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: apache-solr
-        namespace: cluster-config  # Changed from flux-system
+        namespace: solr-op 
       interval: 15m
   install:
     createNamespace: false
