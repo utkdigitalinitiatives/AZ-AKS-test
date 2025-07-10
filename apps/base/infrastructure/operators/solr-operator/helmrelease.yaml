@@ -8,11 +8,11 @@ spec:
   chart:
     spec:
       chart: solr-operator
-      version: "0.8.1"
+      version: "0.9.1"  # ✅ Stable version (not prerelease)
       sourceRef:
         kind: HelmRepository
         name: apache-solr
-        namespace: solr-op 
+        namespace: solr-op
       interval: 15m
   install:
     createNamespace: false
