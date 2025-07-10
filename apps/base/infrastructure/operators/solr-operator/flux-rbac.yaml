@@ -45,18 +45,32 @@ roleRef:
   name: flux-helm-controller
   apiGroup: rbac.authorization.k8s.io
 ---
-# ClusterRole for CRD management (needed for Solr Operator)
+# ClusterRole for managing cluster-wide resources (EXPANDED)
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: flux-solr-operator-manager
 rules:
+# CRD management
 - apiGroups: ["apiextensions.k8s.io"]
   resources: ["customresourcedefinitions"]
-  verbs: ["get", "list", "create", "update", "patch"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Webhook management
 - apiGroups: ["admissionregistration.k8s.io"]
   resources: ["validatingwebhookconfigurations", "mutatingwebhookconfigurations"]
   verbs: ["get", "list", "create", "update", "patch", "delete"]
+# ClusterRole and ClusterRoleBinding management (ADDED)
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["clusterroles", "clusterrolebindings"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Node access (needed by some operators)
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list"]
+# Namespace access (operators often need to list namespaces)
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list"]
 ---
 # ClusterRoleBinding for flux-applier
 apiVersion: rbac.authorization.k8s.io/v1
