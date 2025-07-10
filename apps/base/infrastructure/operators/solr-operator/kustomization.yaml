@@ -5,4 +5,6 @@ namespace: solr-op
 
 resources:
   - namespace.yaml
+  - flux-rbac.yaml
+#  - install-crds.yaml
   - helmrelease.yaml

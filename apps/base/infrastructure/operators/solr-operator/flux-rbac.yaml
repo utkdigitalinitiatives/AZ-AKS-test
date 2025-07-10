@@ -1,0 +1,73 @@
+# Service Account for Flux operations in solr-op namespace
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: flux-applier
+  namespace: solr-op
+---
+# Role for Helm release management in solr-op namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: solr-op
+  name: flux-helm-controller
+rules:
+# Permissions for Helm release management
+- apiGroups: [""]
+  resources: ["secrets", "configmaps"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+- apiGroups: [""]
+  resources: ["pods", "services", "serviceaccounts"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Permissions for managing Solr Operator resources
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets", "statefulsets"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["roles", "rolebindings"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+---
+# RoleBinding for flux-applier in solr-op namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: flux-helm-controller
+  namespace: solr-op
+subjects:
+- kind: ServiceAccount
+  name: flux-applier
+  namespace: solr-op
+roleRef:
+  kind: Role
+  name: flux-helm-controller
+  apiGroup: rbac.authorization.k8s.io
+---
+# ClusterRole for CRD management (needed for Solr Operator)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: flux-solr-operator-manager
+rules:
+- apiGroups: ["apiextensions.k8s.io"]
+  resources: ["customresourcedefinitions"]
+  verbs: ["get", "list", "create", "update", "patch"]
+- apiGroups: ["admissionregistration.k8s.io"]
+  resources: ["validatingwebhookconfigurations", "mutatingwebhookconfigurations"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+---
+# ClusterRoleBinding for flux-applier
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: flux-solr-operator-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: flux-solr-operator-manager
+subjects:
+- kind: ServiceAccount
+  name: flux-applier
+  namespace: solr-op
