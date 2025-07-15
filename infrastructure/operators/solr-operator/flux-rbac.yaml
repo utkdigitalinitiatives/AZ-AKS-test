@@ -29,6 +29,10 @@ rules:
 - apiGroups: ["rbac.authorization.k8s.io"]
   resources: ["roles", "rolebindings"]
   verbs: ["get", "list", "create", "update", "patch", "delete"]
+# Coordination resources (for leader election)
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 ---
 # RoleBinding for flux-applier in solr-op namespace
 apiVersion: rbac.authorization.k8s.io/v1
@@ -59,18 +63,42 @@ rules:
 - apiGroups: ["admissionregistration.k8s.io"]
   resources: ["validatingwebhookconfigurations", "mutatingwebhookconfigurations"]
   verbs: ["get", "list", "create", "update", "patch", "delete"]
-# ClusterRole and ClusterRoleBinding management (ADDED)
+# ClusterRole and ClusterRoleBinding management
 - apiGroups: ["rbac.authorization.k8s.io"]
   resources: ["clusterroles", "clusterrolebindings"]
   verbs: ["get", "list", "create", "update", "patch", "delete"]
-# Node access (needed by some operators)
+# Node access (needed by operators)
 - apiGroups: [""]
   resources: ["nodes"]
-  verbs: ["get", "list"]
-# Namespace access (operators often need to list namespaces)
+  verbs: ["get", "list", "watch"]
+# Namespace access (operators need to list namespaces)
 - apiGroups: [""]
   resources: ["namespaces"]
-  verbs: ["get", "list"]
+  verbs: ["get", "list", "watch"]
+# Core resources that operators need cluster-wide access to
+- apiGroups: [""]
+  resources: ["configmaps", "endpoints", "events", "persistentvolumeclaims", "pods", "secrets", "services", "serviceaccounts"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+# Apps resources that operators need
+- apiGroups: ["apps"]
+  resources: ["daemonsets", "deployments", "replicasets", "statefulsets"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+# Policy resources
+- apiGroups: ["policy"]
+  resources: ["poddisruptionbudgets"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+# Networking resources
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+# Solr-specific resources
+- apiGroups: ["solr.apache.org"]
+  resources: ["*"]
+  verbs: ["*"]
+# ZooKeeper-specific resources
+- apiGroups: ["zookeeper.pravega.io"]
+  resources: ["*"]
+  verbs: ["*"]
 ---
 # ClusterRoleBinding for flux-applier
 apiVersion: rbac.authorization.k8s.io/v1
