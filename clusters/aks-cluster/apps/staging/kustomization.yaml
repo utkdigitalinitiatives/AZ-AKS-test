@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: solr-staging
+  labels:
+    name: solr-staging
+    environment: staging
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference the base application configuration
+resources:
+  - ../../../../apps/base/solr
+
+# Staging-specific namespace
+namespace: solr-staging
+
+# Staging-specific labels
+commonLabels:
+  environment: staging
+  team: search-platform
+
+# Name prefix for staging resources
+namePrefix: staging-
+
+# Patches to customize for staging environment
+patches:
+  # Scale down for staging environment
+  - target:
+      kind: SolrCloud
+      name: example-solrcloud
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: replace
+        path: /spec/zookeeperRef/provided/replicas
+        value: 1
+  
+  # Reduce resources for staging
+  - target:
+      kind: SolrCloud
+      name: example-solrcloud
+    patch: |-
+      - op: replace
+        path: /spec/solrJavaMem
+        value: "-Xms512m -Xmx1g"
+      - op: replace
+        path: /spec/customSolrKubeOptions/podOptions/resources/requests/memory
+        value: "1Gi"
+      - op: replace
+        path: /spec/customSolrKubeOptions/podOptions/resources/limits/memory
+        value: "2Gi"
+      - op: replace
+        path: /spec/customSolrKubeOptions/podOptions/resources/requests/cpu
+        value: "250m"
+      - op: replace
+        path: /spec/customSolrKubeOptions/podOptions/resources/limits/cpu
+        value: "1"
+  
+  # Smaller storage for staging
+  - target:
+      kind: SolrCloud
+      name: example-solrcloud
+    patch: |-
+      - op: replace
+        path: /spec/storageOptions/persistentVolumeClaimSpec/resources/requests/storage
+        value: "5Gi"
+      - op: replace
+        path: /spec/zookeeperRef/provided/persistence/spec/resources/requests/storage
+        value: "2Gi"
+  
+  # Staging-specific ingress domain
+  - target:
+      kind: SolrCloud
+      name: example-solrcloud
+    patch: |-
+      - op: replace
+        path: /spec/solrAddressability/external/domainName
+        value: "solr-staging.local"
