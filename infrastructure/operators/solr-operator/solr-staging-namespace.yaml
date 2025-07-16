@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: solr-staging
-  labels:
-    name: solr-staging
-    environment: staging

@@ -1,0 +1,24 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: solr-operator
+  namespace: solr-system
+spec:
+  values:
+    # Staging-specific operator configuration
+    resources:
+      limits:
+        cpu: 150m
+        memory: 200Mi
+      requests:
+        cpu: 50m
+        memory: 100Mi
+    
+    zookeeper-operator:
+      resources:
+        limits:
+          cpu: 150m
+          memory: 200Mi
+        requests:
+          cpu: 50m
+          memory: 100Mi

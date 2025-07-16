@@ -1,8 +1,0 @@
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
-metadata:
-  name: apache-solr
-  namespace: solr-op
-spec:
-  interval: 24h
-  url: https://solr.apache.org/charts

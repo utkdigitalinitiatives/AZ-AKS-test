@@ -1,0 +1,25 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps
+  namespace: flux-system
+spec:
+  interval: 10m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: "./apps/staging"
+  prune: true
+  wait: true
+  timeout: 15m
+  dependsOn:
+    - name: infrastructure
+  healthChecks:
+    - apiVersion: zookeeper.pravega.io/v1beta1
+      kind: ZookeeperCluster
+      name: staging-solr-zookeeper
+      namespace: solr-search-staging
+    - apiVersion: solr.apache.org/v1beta1
+      kind: SolrCloud
+      name: staging-solr-search
+      namespace: solr-search-staging

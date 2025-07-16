@@ -1,0 +1,63 @@
+apiVersion: zookeeper.pravega.io/v1beta1
+kind: ZookeeperCluster
+metadata:
+  name: solr-zookeeper
+  namespace: solr-search
+spec:
+  replicas: 3
+  
+  # Storage configuration
+  persistence:
+    reclaimPolicy: Delete
+    spec:
+      storageClassName: default
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
+  
+  # Resource configuration - conservative for shared cluster
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "100m"
+    limits:
+      memory: "1Gi"
+      cpu: "200m"
+  
+  # ZooKeeper configuration
+  config:
+    initLimit: 10
+    syncLimit: 2
+    tickTime: 2000
+    globalOutstandingLimit: 1000
+    preAllocSize: 65536
+    snapCount: 10000
+    commitLogCount: 500
+    snapSizeLimitInKb: 4194304
+    maxCnxns: 0
+    maxClientCnxns: 60
+    minSessionTimeout: 4000
+    maxSessionTimeout: 40000
+    autopurge.snapRetainCount: 3
+    autopurge.purgeInterval: 1
+    quorumListenOnAllIPs: false
+  
+  # Pod configuration
+  pod:
+    securityContext:
+      runAsUser: 1000
+      fsGroup: 1000
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - solr-zookeeper
+            topologyKey: kubernetes.io/hostname
