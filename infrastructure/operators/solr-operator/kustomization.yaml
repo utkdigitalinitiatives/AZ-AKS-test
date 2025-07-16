@@ -7,4 +7,5 @@ resources:
   - namespace.yaml
   - flux-rbac.yaml
 #  - install-crds.yaml
+  - solr-staging-namespace.yaml
   - helmrelease.yaml
