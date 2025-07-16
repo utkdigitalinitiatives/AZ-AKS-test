@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: solr-operator
-      version: "0.9.1"  # ✅ Stable version (not prerelease)
+      version: "0.9.1"  # Latest stable version
       sourceRef:
         kind: HelmRepository
         name: apache-solr
@@ -16,19 +16,28 @@ spec:
       interval: 15m
   install:
     createNamespace: false
+    crds: Skip  # CRDs managed manually, not by Helm
     remediation:
       retries: 3
   upgrade:
+    crds: Skip  # Prevent Helm from managing CRDs on upgrade
     remediation:
       retries: 3
   values:
     # Enable ZooKeeper operator as dependency
     zookeeper-operator:
       install: true
+      crd:
+        create: false  # Prevent CRD conflicts - CRDs installed manually
     
-    # Operator configuration
+    # Operator configuration with namespace watching
     image:
       pullPolicy: IfNotPresent
+    
+    # Environment variables for operator behavior
+    env:
+      - name: WATCH_NAMESPACES
+        value: "solr-op,solr-staging"  # Watch operator namespace + app namespaces
     
     # RBAC configuration
     rbac:
@@ -48,7 +57,23 @@ spec:
         cpu: 100m
         memory: 128Mi
     
+    # Health and metrics configuration
+    healthProbeBindAddress: ":8081"
+    metricsBindAddress: ":8080"
+    
+    # Leader election (good for HA)
+    leaderElect: true
+    
     # Node selector and tolerations if needed
     nodeSelector: {}
     tolerations: []
     affinity: {}
+    
+    # Security context (recommended)
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1001
+    
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 1001
