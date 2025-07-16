@@ -11,6 +11,7 @@ kind: Kustomization
 
 # Reference the base application configuration
 resources:
+  - namespace.yaml
   - ../../../../apps/base/solr
 
 # Staging-specific namespace
