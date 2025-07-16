@@ -28,7 +28,6 @@ spec:
     remediation:
       retries: 3
   upgrade:
-    skipCRDs: true  # CRDs are managed separately
     remediation:
       retries: 3
   values:
