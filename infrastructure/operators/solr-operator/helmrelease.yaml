@@ -34,10 +34,9 @@ spec:
     image:
       pullPolicy: IfNotPresent
     
-    # Environment variables for operator behavior
-    env:
-      - name: WATCH_NAMESPACES
-        value: "solr-op,solr-staging"  # Watch operator namespace + app namespaces
+    # ✅ Operator arguments for behavior configuration
+    extraArgs:
+      - --watch-namespaces=solr-op,solr-staging
     
     # RBAC configuration
     rbac:
