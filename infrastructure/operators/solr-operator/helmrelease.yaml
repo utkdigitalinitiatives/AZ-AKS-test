@@ -35,8 +35,7 @@ spec:
       pullPolicy: IfNotPresent
     
     # Operator arguments for behavior configuration
-    extraArgs:
-      - --watch-namespaces=solr-op,solr-staging
+    watchNamespaces: "solr-op,solr-staging"
     
     # RBAC configuration
     rbac:
