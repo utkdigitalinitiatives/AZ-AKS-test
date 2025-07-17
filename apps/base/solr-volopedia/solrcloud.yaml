@@ -40,23 +40,24 @@ spec:
   solrOpts: "-Dsolr.autoSoftCommit.maxTime=10000"
   
   # Pod configuration
-  podOptions:
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchLabels:
-                solr-cloud: solr-volopedia
-            topologyKey: kubernetes.io/hostname
-    
-    # Environment variables
-    env:
-    - name: SOLR_LOG_LEVEL
-      value: "INFO"
-    - name: GC_TUNE
-      value: "-XX:+UseG1GC -XX:+UseStringDeduplication"
+  customSolrKubeOptions:
+    podOptions:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  solr-cloud: solr-volopedia
+              topologyKey: kubernetes.io/hostname
+      
+      # Environment variables
+      env:
+      - name: SOLR_LOG_LEVEL
+        value: "INFO"
+      - name: GC_TUNE
+        value: "-XX:+UseG1GC -XX:+UseStringDeduplication"
   
   # Service configuration for external access
   solrAddressability:
