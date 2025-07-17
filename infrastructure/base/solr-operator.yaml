@@ -24,7 +24,6 @@ spec:
         namespace: solr-system
       interval: 12h
   install:
-    skipCRDs: true  # CRDs are managed separately
     remediation:
       retries: 3
   upgrade:
@@ -47,8 +46,6 @@ spec:
     zookeeper-operator:
       install: true
       use: true
-      crd:
-        create: false  # We manage CRDs separately
       resources:
         limits:
           cpu: 200m

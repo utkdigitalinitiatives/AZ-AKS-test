@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - solr-system-namespace.yaml
-  - solr-crds.yaml
+ # - solr-crds.yaml
   - solr-operator.yaml
 
 commonLabels:
