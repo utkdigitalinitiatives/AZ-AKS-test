@@ -33,6 +33,10 @@ spec:
     # Watch all namespaces for Solr resources
     watchNamespaces: ""
     
+    # Disable CRD creation since we handle it separately
+    crds:
+      create: false
+    
     # Operator resource configuration
     resources:
       limits:
