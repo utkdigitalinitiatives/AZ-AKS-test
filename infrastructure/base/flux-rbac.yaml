@@ -32,7 +32,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: flux-applier
-  namespace: solr-system
+  namespace: default
 roleRef:
   kind: Role
   name: flux-applier-helm
@@ -96,7 +96,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: flux-applier
-  namespace: solr-system
+  namespace: default
 roleRef:
   kind: ClusterRole
   name: flux-applier-cluster-admin
