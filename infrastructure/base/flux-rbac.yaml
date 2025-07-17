@@ -77,3 +77,43 @@ roleRef:
   kind: ClusterRole
   name: flux-applier-cluster-admin
   apiGroup: rbac.authorization.k8s.io
+---
+# Role for Zookeeper Operator (namespace-scoped permissions)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: solr-system
+  name: zookeeper-operator
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["services", "endpoints"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+- apiGroups: ["apps"]
+  resources: ["statefulsets"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+- apiGroups: ["zookeeper.pravega.io"]
+  resources: ["zookeeperclusters"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: zookeeper-operator
+  namespace: solr-system
+subjects:
+- kind: ServiceAccount
+  name: zookeeper-operator
+  namespace: solr-system
+roleRef:
+  kind: Role
+  name: zookeeper-operator
+  apiGroup: rbac.authorization.k8s.io
