@@ -139,6 +139,47 @@ roleRef:
   name: zookeeper-operator
   apiGroup: rbac.authorization.k8s.io
 ---
+# RBAC bindings for solr-operator service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: solr-operator-helm
+  namespace: solr-system
+subjects:
+- kind: ServiceAccount
+  name: solr-operator
+  namespace: solr-system
+roleRef:
+  kind: Role
+  name: flux-applier-helm
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: solr-operator-cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: solr-operator
+  namespace: solr-system
+roleRef:
+  kind: ClusterRole
+  name: flux-applier-cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+# Service accounts for operators in solr-system namespace
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: solr-operator
+  namespace: solr-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: zookeeper-operator
+  namespace: solr-system
+---
 # Enhanced cluster-wide permissions for Zookeeper Operator
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole

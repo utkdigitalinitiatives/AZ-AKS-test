@@ -19,7 +19,7 @@ spec:
     # Configure to use existing ServiceAccount instead of creating one
     serviceAccount:
       create: false
-      name: flux-applier
+      name: solr-operator
     
     # Disable RBAC creation since we're managing it separately
     rbac:
@@ -40,4 +40,4 @@ spec:
         create: false
       serviceAccount:
         create: false
-        name: flux-applier
+        name: zookeeper-operator
