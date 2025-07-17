@@ -62,7 +62,7 @@ spec:
   # Service configuration for external access
   solrAddressability:
     external:
-      method: LoadBalancer
+      method: Ingress
       domainName: "volopedia.local"
       hideCommon: false
     commonServicePort: 8983
