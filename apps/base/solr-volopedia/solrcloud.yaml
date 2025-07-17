@@ -15,7 +15,9 @@ spec:
   # ZooKeeper reference
   zookeeperRef:
     provided:
-      replicas: 3
+      zookeeperCluster:
+        name: "staging-volopedia-zookeeper"
+        namespace: "solr-volopedia"
   
   # Storage configuration
   dataStorage:
