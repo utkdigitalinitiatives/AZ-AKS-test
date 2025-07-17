@@ -5,6 +5,7 @@ namespace: solr-volopedia
 
 resources:
   - ../../base/solr-volopedia
+  - loadbalancer.yaml
 
 namePrefix: staging-
 
