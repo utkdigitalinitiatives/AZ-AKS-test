@@ -17,15 +17,6 @@ spec:
         requests:
           storage: 5Gi
   
-  # Resource configuration
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "100m"
-    limits:
-      memory: "1Gi"
-      cpu: "200m"
-  
   # ZooKeeper configuration
   config:
     initLimit: 10
@@ -46,6 +37,13 @@ spec:
   
   # Pod configuration
   zookeeperPodPolicy:
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "100m"
+      limits:
+        memory: "1Gi"
+        cpu: "200m"
     securityContext:
       runAsUser: 1000
       fsGroup: 1000
