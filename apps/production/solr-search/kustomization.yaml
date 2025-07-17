@@ -5,9 +5,9 @@ namespace: solr-search-production
 
 resources:
   - ../../base/solr-search
+  - namespace-patch.yaml
 
 patchesStrategicMerge:
-  - namespace-patch.yaml
   - zookeeper-values.yaml
   - solrcloud-values.yaml
 
