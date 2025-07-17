@@ -1,0 +1,76 @@
+apiVersion: solr.apache.org/v1beta1
+kind: SolrCloud
+metadata:
+  name: solr-volopedia
+  namespace: solr-volopedia
+spec:
+  # Solr version and replicas
+  replicas: 3
+  solrImage:
+    tag: "9.8.1"
+  
+  # Java memory configuration
+  solrJavaMem: "-Xms1g -Xmx2g"
+  
+  # ZooKeeper reference
+  zookeeperRef:
+    provided:
+      replicas: 3
+  
+  # Storage configuration
+  dataStorage:
+    persistent:
+      reclaimPolicy: Delete
+      pvcTemplate:
+        spec:
+          storageClassName: default
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+  
+  # Update strategy
+  updateStrategy:
+    method: "Managed"
+    managed:
+      maxPodsUnavailable: 1
+  
+  # Solr configuration
+  solrOpts: "-Dsolr.autoSoftCommit.maxTime=10000"
+  
+  # Pod configuration
+  podOptions:
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "500m"
+      limits:
+        memory: "4Gi"
+        cpu: "1000m"
+    
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                solr-cloud: solr-volopedia
+            topologyKey: kubernetes.io/hostname
+    
+    # Environment variables
+    env:
+    - name: SOLR_LOG_LEVEL
+      value: "INFO"
+    - name: GC_TUNE
+      value: "-XX:+UseG1GC -XX:+UseStringDeduplication"
+  
+  # Service configuration for external access
+  solrAddressability:
+    external:
+      method: LoadBalancer
+      domainName: "volopedia.local"
+      hideCommon: false
+    commonServicePort: 8983
+    kubeDomain: "cluster.local"
