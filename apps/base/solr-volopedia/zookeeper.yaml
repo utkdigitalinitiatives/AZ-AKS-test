@@ -36,7 +36,7 @@ spec:
     quorumListenOnAllIPs: false
   
   # Pod configuration
-  zookeeperPodPolicy:
+  pod:
     resources:
       requests:
         memory: "512Mi"
