@@ -14,10 +14,8 @@ spec:
   
   # ZooKeeper reference
   zookeeperRef:
-    provided:
-      zookeeperCluster:
-        name: "staging-volopedia-zookeeper"
-        namespace: "solr-volopedia"
+    connectionInfo:
+      internalConnectionString: "staging-volopedia-zookeeper-0.staging-volopedia-zookeeper-headless.solr-volopedia.svc.cluster.local:2181,staging-volopedia-zookeeper-1.staging-volopedia-zookeeper-headless.solr-volopedia.svc.cluster.local:2181,staging-volopedia-zookeeper-2.staging-volopedia-zookeeper-headless.solr-volopedia.svc.cluster.local:2181"
   
   # Storage configuration
   dataStorage:
