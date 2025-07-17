@@ -1,3 +1,4 @@
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -5,20 +6,23 @@ metadata:
   name: flux-applier-helm
 rules:
 - apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
-- apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
+  resources: ["secrets", "configmaps", "services", "serviceaccounts", "pods", "persistentvolumeclaims", "events", "endpoints"]
+  verbs: ["*"]
 - apiGroups: ["apps"]
-  resources: ["deployments", "replicasets"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
-- apiGroups: [""]
-  resources: ["services", "serviceaccounts"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
+  resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]
+  verbs: ["*"]
 - apiGroups: ["rbac.authorization.k8s.io"]
   resources: ["roles", "rolebindings"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
+  verbs: ["*"]
+- apiGroups: ["policy"]
+  resources: ["poddisruptionbudgets"]
+  verbs: ["*"]
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["*"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["*"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -34,7 +38,7 @@ roleRef:
   name: flux-applier-helm
   apiGroup: rbac.authorization.k8s.io
 ---
-# Comprehensive ClusterRole for Solr and Zookeeper operators
+# Enhanced ClusterRole for Solr and Zookeeper operators
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -43,27 +47,47 @@ rules:
 # CRD management
 - apiGroups: ["apiextensions.k8s.io"]
   resources: ["customresourcedefinitions"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
+  verbs: ["*"]
 # Webhook management
 - apiGroups: ["admissionregistration.k8s.io"]
   resources: ["mutatingwebhookconfigurations", "validatingwebhookconfigurations"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
-# RBAC management (needed for operators)
+  verbs: ["*"]
+# RBAC management (CRITICAL: needed for operators to create their own RBAC)
 - apiGroups: ["rbac.authorization.k8s.io"]
   resources: ["clusterroles", "clusterrolebindings"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
-# Node access (sometimes needed by operators)
+  verbs: ["*"]
+# Core resources that operators need cluster-wide access to
 - apiGroups: [""]
-  resources: ["nodes"]
-  verbs: ["get", "list"]
-# Storage classes (for persistent volumes)
+  resources: ["nodes", "namespaces", "pods", "services", "endpoints", "configmaps", "secrets", "persistentvolumeclaims", "events", "serviceaccounts"]
+  verbs: ["*"]
+# Apps resources
+- apiGroups: ["apps"]
+  resources: ["deployments", "statefulsets", "replicasets", "daemonsets"]
+  verbs: ["*"]
+# Storage classes
 - apiGroups: ["storage.k8s.io"]
   resources: ["storageclasses"]
   verbs: ["get", "list"]
-# Namespace management
-- apiGroups: [""]
-  resources: ["namespaces"]
-  verbs: ["get", "list", "create", "update", "patch"]
+# Policy resources
+- apiGroups: ["policy"]
+  resources: ["poddisruptionbudgets"]
+  verbs: ["*"]
+# Networking
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["*"]
+# Solr CRDs (for when the operator creates them)
+- apiGroups: ["solr.apache.org"]
+  resources: ["*"]
+  verbs: ["*"]
+# Zookeeper CRDs (for when the operator creates them)
+- apiGroups: ["zookeeper.pravega.io"]
+  resources: ["*"]
+  verbs: ["*"]
+# Coordination (for leader election)
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["*"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -86,11 +110,20 @@ metadata:
   name: zookeeper-operator
 rules:
 - apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
+  resources: ["*"]
+  verbs: ["*"]
+- apiGroups: ["apps"]
+  resources: ["*"]
+  verbs: ["*"]
+- apiGroups: ["policy"]
+  resources: ["*"]
+  verbs: ["*"]
 - apiGroups: ["coordination.k8s.io"]
-  resources: ["leases"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
+  resources: ["*"]
+  verbs: ["*"]
+- apiGroups: ["zookeeper.pravega.io"]
+  resources: ["*"]
+  verbs: ["*"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -106,31 +139,36 @@ roleRef:
   name: zookeeper-operator
   apiGroup: rbac.authorization.k8s.io
 ---
-# Cluster-wide permissions for Zookeeper Operator
+# Enhanced cluster-wide permissions for Zookeeper Operator
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: zookeeper-operator-cluster
 rules:
-# Core resources the operator needs to watch cluster-wide
+# All core resources with full permissions
 - apiGroups: [""]
-  resources: ["pods", "services", "endpoints", "persistentvolumeclaims", "events"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  resources: ["*"]
+  verbs: ["*"]
+# All apps resources
 - apiGroups: ["apps"]
-  resources: ["statefulsets"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-# Zookeeper CRDs
-- apiGroups: ["zookeeper.pravega.io"]
-  resources: ["zookeeperclusters"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  resources: ["*"]
+  verbs: ["*"]
 # Policy resources
 - apiGroups: ["policy"]
-  resources: ["poddisruptionbudgets"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  resources: ["*"]
+  verbs: ["*"]
+# Zookeeper CRDs
+- apiGroups: ["zookeeper.pravega.io"]
+  resources: ["*"]
+  verbs: ["*"]
 # Storage resources
 - apiGroups: ["storage.k8s.io"]
-  resources: ["storageclasses"]
+  resources: ["*"]
   verbs: ["get", "list"]
+# Coordination resources
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["*"]
+  verbs: ["*"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
