@@ -53,7 +53,7 @@ spec:
               topologyKey: kubernetes.io/hostname
       
       # Environment variables
-      env:
+      envVars:
       - name: SOLR_LOG_LEVEL
         value: "INFO"
       - name: GC_TUNE
