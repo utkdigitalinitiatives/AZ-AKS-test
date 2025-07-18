@@ -17,9 +17,13 @@ spec:
   healthChecks:
     - apiVersion: zookeeper.pravega.io/v1beta1
       kind: ZookeeperCluster
-      name: staging-solr-zookeeper
-      namespace: solr-search-staging
+      name: staging-volopedia-zookeeper
+      namespace: solr-volopedia
     - apiVersion: solr.apache.org/v1beta1
       kind: SolrCloud
-      name: staging-solr-search
-      namespace: solr-search-staging
+      name: staging-solr-volopedia
+      namespace: solr-volopedia
+    - apiVersion: solr.apache.org/v1beta1
+      kind: SolrCloud
+      name: staging-solr-mainsite
+      namespace: solr-mainsite
