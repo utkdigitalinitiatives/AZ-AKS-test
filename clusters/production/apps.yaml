@@ -14,12 +14,3 @@ spec:
   timeout: 15m
   dependsOn:
     - name: infrastructure
-  healthChecks:
-    - apiVersion: zookeeper.pravega.io/v1beta1
-      kind: ZookeeperCluster
-      name: production-solr-zookeeper
-      namespace: solr-search-production
-    - apiVersion: solr.apache.org/v1beta1
-      kind: SolrCloud
-      name: production-solr-search
-      namespace: solr-search-production
